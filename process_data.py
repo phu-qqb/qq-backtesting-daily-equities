@@ -7,8 +7,6 @@ from pathlib import Path
 # --- Charger les fichiers historiques ---
 # Format: security,datetime,close (sans header)
 def load_multiseries(path: Path) -> pd.DataFrame:
-=======
-
     df = pd.read_csv(
         path,
         header=None,
@@ -52,7 +50,9 @@ print('Vérification initiale OK')
 
 # --- Charger et filtrer new_points.csv 13h-19h ---
 
-new_df = pd.read_csv(DATA_DIR / 'new_points.csv', index_col=0, parse_dates=True)
+# Lire les nouveaux points en s'assurant que l'index est bien de type datetime.
+new_df = pd.read_csv(DATA_DIR / 'new_points.csv', index_col=0)
+new_df.index = pd.to_datetime(new_df.index)
 
 new_df.columns = new_df.columns.astype(df_H.columns.dtype)
 new_df = new_df[(new_df.index.hour>=13)&(new_df.index.hour<=19)]
