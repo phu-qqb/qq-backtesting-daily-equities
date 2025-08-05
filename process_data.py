@@ -51,7 +51,8 @@ print('Vérification initiale OK')
 # --- Charger et filtrer new_points.csv 13h-19h ---
 
 # Lire les nouveaux points en s'assurant que l'index est bien de type datetime.
-new_df = pd.read_csv(DATA_DIR / 'new_points.csv', index_col=0)
+# Le fichier new_points.csv est séparé par des tabulations.
+new_df = pd.read_csv(DATA_DIR / 'new_points.csv', index_col=0, sep='\t')
 new_df.index = pd.to_datetime(new_df.index)
 
 new_df.columns = new_df.columns.astype(df_H.columns.dtype)
