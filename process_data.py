@@ -1,11 +1,14 @@
 import pandas as pd
 import numpy as np
 import sys
+
 from pathlib import Path
 
 # --- Charger les fichiers historiques ---
 # Format: security,datetime,close (sans header)
 def load_multiseries(path: Path) -> pd.DataFrame:
+=======
+
     df = pd.read_csv(
         path,
         header=None,
@@ -15,12 +18,14 @@ def load_multiseries(path: Path) -> pd.DataFrame:
     # Pivot en DataFrame datetime × security
     return df.pivot(index='datetime', columns='security', values='close').sort_index()
 
+
 # Répertoire des fichiers
 DATA_DIR = Path(r'D:/QQ/Intraday')
 
 # Fichiers à charger
 files = ['A.txt', 'H.txt', 'I.txt', 'A_EU.txt', 'H_EU.txt', 'I_EU.txt']
 hist = {f: load_multiseries(DATA_DIR / f) for f in files}
+
 
 # --- Supprimer le dernier jour complet de l'history pour certains fichiers ---
 for key, df in hist.items():
@@ -46,7 +51,9 @@ if not np.allclose(rets_H.values, rets_A.values, atol=1e-7):
 print('Vérification initiale OK')
 
 # --- Charger et filtrer new_points.csv 13h-19h ---
+
 new_df = pd.read_csv(DATA_DIR / 'new_points.csv', index_col=0, parse_dates=True)
+
 new_df.columns = new_df.columns.astype(df_H.columns.dtype)
 new_df = new_df[(new_df.index.hour>=13)&(new_df.index.hour<=19)]
 # Exclure <= dernière date de A
@@ -82,7 +89,9 @@ for label in ['A','H','I']:
     df_out = globals()[f'{label}_updated'].reset_index()[['security','datetime','close']]
     df_out.sort_values(['security','datetime'], inplace=True)
     df_out['datetime']=df_out['datetime'].dt.strftime('%Y-%m-%d %H:%M')
+
     df_out.to_csv(DATA_DIR / f'{label}_updated.txt', header=False, index=False)
+
     print(f'{label}_updated.txt généré')
 
 # --- Création D.txt à partir de A_updated timestamps ---
@@ -91,5 +100,7 @@ ts = DatetimeIndex(hist['A.txt'].index).normalize() # use original A timestamps
 # Actually use A_updated
 ts = DatetimeIndex(A_updated.reset_index()['datetime'])
 all_ts = ts.drop_duplicates().sort_values()
+
 Series(all_ts.strftime('%Y-%m-%d %H:%M')).to_csv(DATA_DIR / 'D.txt', header=False, index=False)
+
 print('D.txt généré')
