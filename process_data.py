@@ -35,7 +35,10 @@ for key, df in hist.items():
         hist[key] = df.loc[mask]
 
 
-def process_region(suffix: str, hours: tuple[int, int], new_points_file: str) -> None:
+NEW_POINTS_FILE = 'new_points.csv'
+
+
+def process_region(suffix: str, hours: tuple[int, int]) -> None:
     df_A = hist[f'A{suffix}.txt']
     df_H = hist[f'H{suffix}.txt']
     df_I = hist[f'I{suffix}.txt']
@@ -54,7 +57,7 @@ def process_region(suffix: str, hours: tuple[int, int], new_points_file: str) ->
     print(f'Vérification initiale {region_label} OK')
 
     # --- Charger et filtrer les nouveaux points ---
-    new_df = pd.read_csv(DATA_DIR / new_points_file, index_col=0, sep='\t')
+    new_df = pd.read_csv(DATA_DIR / NEW_POINTS_FILE, index_col=0, sep='\t')
     new_df.index = pd.to_datetime(new_df.index)
     new_df.columns = new_df.columns.astype(df_H.columns.dtype)
     new_df = new_df[(new_df.index.hour >= hours[0]) & (new_df.index.hour <= hours[1])]
@@ -111,5 +114,5 @@ def process_region(suffix: str, hours: tuple[int, int], new_points_file: str) ->
 
 
 # Traitement US et EU
-process_region('', (13, 19), 'new_points.csv')
-process_region('_EU', (6, 12), 'new_points_EU.csv')
+process_region('', (13, 19))
+process_region('_EU', (6, 12))
